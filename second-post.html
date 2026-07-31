@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Zoe Chen reflects on learning AI agents and building a multi-agent system with vibe coding.">
+    <title>From Chatbots to Multi-Agent Systems: My First Vibe Coding Experience | Zoe Chen</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="site-header post-header">
+        <div class="container">
+            <nav class="site-nav" aria-label="Main navigation">
+                <a href="index.html">Home</a>
+                <a class="active" href="blog.html">Blog</a>
+            </nav>
+            <h1>From Chatbots to Multi-Agent Systems: My First Vibe Coding Experience</h1>
+            <p class="post-date"><time datetime="2026-07-31">Published July 31, 2026</time></p>
+            <div class="page-shape page-shape-post" aria-hidden="true">
+                <span class="shape-ring"></span><span class="shape-square-small"></span><span class="shape-dot"></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <article class="post-content">
+            <p class="post-lead">Before this week, I mainly thought of AI as a chatbot that answers questions. I had used tools such as ChatGPT, but I did not understand how an AI system could inspect information, use tools, follow a workflow, or cooperate with other agents. Building my own system changed that idea completely.</p>
+
+            <h2>From Answering to Acting</h2>
+            <p>A chatbot usually follows a short path: it receives a question, sends it to a language model, and returns text. An AI agent goes further. It observes data, reasons about a task, chooses a tool, takes an action, and checks the feedback. The language model can suggest and explain a decision, while Python performs exact work such as calculations, validation, and data processing.</p>
+            <figure class="process-figure" aria-labelledby="agent-workflow-caption">
+                <div class="process-flow"><span>Observe</span><b aria-hidden="true">&rarr;</b><span>Reason</span><b aria-hidden="true">&rarr;</b><span>Use Tools</span><b aria-hidden="true">&rarr;</b><span>Act</span><b aria-hidden="true">&rarr;</b><span>Feedback</span></div>
+                <figcaption id="agent-workflow-caption">The feedback loop that turned my idea of AI from a text generator into an active system.</figcaption>
+            </figure>
+
+            <h2>Why Build an AI Team?</h2>
+            <p>If one agent can handle many tasks, why use several? I learned that the answer is specialization. A multi-agent system is not a collection of chatbots repeating the same answer. Each agent needs a different responsibility, the information required for that role, and a clear output for the next stage. This resembles an AI co-scientist: one role generates an idea, another criticizes it, and another improves it.</p>
+            <div class="table-wrap"><table class="post-table">
+                <thead><tr><th>Agent</th><th>Information It Sees</th><th>Main Responsibility</th></tr></thead>
+                <tbody><tr><td>Alpha Agent</td><td>Technical indicators</td><td>Propose possible trades</td></tr><tr><td>Risk Agent</td><td>Candidates and portfolio</td><td>Approve, reject, or limit ideas</td></tr><tr><td>Portfolio Agent</td><td>Approved ideas, prices, and cash</td><td>Calculate affordable orders</td></tr></tbody>
+            </table></div>
+
+            <h2>What I Built in Three Stages</h2>
+            <p>I began with a rule-based agent. It read a market snapshot and returned buy, sell, or hold. For example, it could buy about $200 of an approved stock when RSI was below 35 and its price was between $0 and $250. Its valid-symbol list and position limit made it predictable. That simplicity made it a useful baseline because I could always explain why an action occurred.</p>
+            <pre class="code-sample"><code>if rsi &lt; 35 and 0 &lt; price &lt; 250:
+    action = "buy"
+else:
+    action = "hold"</code></pre>
+            <p>Next, I gave one language-model agent several market indicators and asked for structured output: an action, symbol, confidence, reasoning, and position size. It was more flexible and could explain its choice, but flexibility also created risk. It could omit a field, invent a symbol, or recommend an unsafe size. A strict schema helped, yet deterministic Python still had to check every proposal before accepting it.</p>
+            <p>Finally, I separated the work into Alpha, Risk, and Portfolio agents. Alpha searched for opportunities without seeing cash or current holdings. Risk reviewed candidates against conviction and portfolio rules. Portfolio received only approved ideas and converted them into whole-share orders that stayed within available cash. Giving each role less information actually made the complete system easier to inspect.</p>
+
+            <h2>How Vibe Coding Helped</h2>
+            <p>Vibe coding did not mean asking AI to write everything at once. My loop was: give context, request one small change, run the code, read the result, send back the error, and revise. I first made a script that ran, then returned one hold action, added a rule, introduced an LLM call and structured output, built each specialized agent, connected them, and printed an execution trace.</p>
+            <p>The quality of the code depended on the contract I provided: the Python library, market-snapshot shape, valid symbols, required fields, capital limits, and file setup. When something broke, sharing the full traceback and asking for only the broken part to be fixed was much more useful than restarting. Small testable steps made it possible to understand each change before keeping it.</p>
+
+            <h2>Watching the Handoffs</h2>
+            <div class="execution-trace" aria-label="Example multi-agent execution trace">
+                <p><strong>Alpha proposed</strong><br>AAPL &mdash; Buy &mdash; Confidence 0.72<br>KO &mdash; Buy &mdash; Confidence 0.48</p>
+                <p><strong>Risk reviewed</strong><br>AAPL &mdash; Approved<br>KO &mdash; Rejected: confidence below 0.55</p>
+                <p><strong>Portfolio created</strong><br>Buy 1 share of AAPL</p>
+            </div>
+            <p>This trace made the system understandable. Alpha produced two candidates, Risk rejected one for a visible reason, and Portfolio turned the remaining idea into one affordable order. Seeing every handoff was more educational than seeing only the final trade.</p>
+
+            <h2>What Went Wrong</h2>
+            <p>My first problem was output that counted as valid JSON but omitted <code>position_size</code>. I learned that valid syntax does not guarantee a complete contract. Another problem was a confidence value of 4 when the next agent expected a decimal between 0 and 1. Agents must agree on both field names and the meaning of their values. I also saw how one role could return <code>thesis</code> while the next expected <code>reasoning</code>. The interface between agents can be just as important as the intelligence inside them.</p>
+            <p>These issues showed why a human still has to read generated code, protect API keys in a <code>.env</code> file, keep that file out of Git, validate symbols, verify calculations, and reject changes that are not understood. More agents do not automatically create a safer or smarter system.</p>
+
+            <h2>Comparing the Approaches</h2>
+            <div class="table-wrap"><table class="post-table">
+                <thead><tr><th>Approach</th><th>Main Strength</th><th>Main Limitation</th></tr></thead>
+                <tbody><tr><td>Rule-based agent</td><td>Fast, predictable, and easy to inspect</td><td>Limited to fixed rules</td></tr><tr><td>Single LLM agent</td><td>Flexible and able to explain decisions</td><td>One model handles too many responsibilities</td></tr><tr><td>Multi-agent pipeline</td><td>Clear roles and visible decision stages</td><td>Slower and harder to coordinate</td></tr></tbody>
+            </table></div>
+            <p>The multi-agent pipeline did not guarantee the highest return. Its real advantage was a decision process divided into stages that I could inspect, test, and debug. Better explanations and more complexity do not automatically produce better trading performance.</p>
+
+            <h2>What I Learned</h2>
+            <ul><li>An agent combines reasoning, tools, actions, and feedback.</li><li>Multiple agents need specialized roles instead of repeated responsibilities.</li><li>Clear input and output contracts make handoffs reliable.</li><li>Deterministic code should enforce numerical and safety rules.</li><li>Vibe coding works best through small changes that can be tested.</li><li>AI-generated code still requires careful human review.</li></ul>
+
+            <h2>Conclusion</h2>
+            <p>At the beginning of the week, I viewed AI mainly as a tool for answering questions. After building this pipeline, I understood agents as parts of a larger system. My biggest lesson was not how to generate more code. It was how to divide a complicated task into roles, define clear interfaces, study failures, test each stage, and keep a human in control.</p>
+            <a class="back-link" href="blog.html">&larr; Back to My Blog</a>
+        </article>
+    </main>
+    <footer class="site-footer"><div class="container"><p>&copy; 2026 Zoe Chen. Made with HTML and CSS.</p></div></footer>
+</body>
+</html>
