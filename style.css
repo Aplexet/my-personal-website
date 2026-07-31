@@ -485,6 +485,12 @@ h1 {
     bottom: 70px;
 }
 
+/* The first title is shorter, so its decoration can sit a little closer. */
+.first-post-header h1,
+.first-post-header .post-date {
+    max-width: calc(100% - 200px);
+}
+
 .blog-main {
     min-height: 540px;
     padding-top: 58px;
@@ -669,6 +675,46 @@ h1 {
     margin-top: 40px;
 }
 
+.post-navigation {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    margin-top: 55px;
+    padding-top: 28px;
+    border-top: 2px solid var(--text);
+}
+
+.post-navigation-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.post-navigation a {
+    display: inline-block;
+    padding: 10px 15px;
+    color: var(--text);
+    background: var(--white);
+    border: 2px solid var(--text);
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.post-navigation a:hover,
+.post-navigation a:focus,
+.post-navigation .post-navigation-next {
+    color: var(--white);
+    background: var(--text);
+}
+
+.post-navigation .post-navigation-next:hover,
+.post-navigation .post-navigation-next:focus {
+    background: var(--red);
+    border-color: var(--red);
+}
+
 /* FOOTER */
 .site-footer {
     padding: 28px 0;
@@ -719,6 +765,15 @@ h1 {
     .post-header .page-shape-post {
         right: auto;
         bottom: auto;
+    }
+
+    .post-navigation {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .post-navigation a {
+        text-align: center;
     }
 
     .site-nav {
